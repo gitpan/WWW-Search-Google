@@ -2,7 +2,7 @@
 # Google.pm
 # by Jim Smyser
 # Copyright (C) 1996-1999 by Jim Smyser & USC/ISI
-# $Id: Google.pm,v 2.20 2000/06/08 14:29:22 jims Exp $
+# $Id: Google.pm,v 2.20 2000/07/09 14:29:22 jims Exp $
 ##########################################################
 
 
@@ -84,6 +84,9 @@ may code for any new variations.
 
 =head1 CHANGES
 
+2.21
+Minor code correction for empty returned titles
+
 2.20
 Forgot to add new next url regex in 2.19!
 
@@ -141,7 +144,7 @@ require Exporter;
 @EXPORT = qw();
 @EXPORT_OK = qw();
 @ISA = qw(WWW::Search Exporter);
-$VERSION = '2.20';
+$VERSION = '2.21';
 
 $MAINTAINER = 'Jim Smyser <jsmyser@bigfoot.com>';
 $TEST_CASES = <<"ENDTESTCASES";
@@ -246,7 +249,7 @@ sub native_retrieve_some {
      $url =~ s/(>.*)//g;
      $hit->add_url(strip_tags($url));
      $hits_found++;
-     $title = $url if ($title eq '');
+     $title = "No Title" if ($title =~ /^\s+/);
      $hit->title(strip_tags($title));
      $state = $HITS;
      } 
@@ -264,7 +267,7 @@ sub native_retrieve_some {
      $raw .= $_;
      $hit->add_url(strip_tags($url));
      $hits_found++;
-     $title = $url if ($title eq '');
+     $title = "No Title" if ($title =~ /^\s+/);
      $hit->title(strip_tags($title));
      $mDesc =~ s/<.*?>//g;
      $mDesc =  $mDesc . '<br>' if not $mDesc =~ m@<br>@;
@@ -313,3 +316,4 @@ sub native_retrieve_some {
      return $hits_found;
      }
 1;
+
