@@ -1,5 +1,9 @@
 Revision history for Perl module WWW::Search::Google: 
 
+0.19 Mon Jul 22 23:18:29 BST 2002
+	- OSCON edition
+	- updated Makefile.PL dependencies
+
 0.18 Wed Apr 17 09:00:26 GMT 2002
 	- instead of the temporary hack of hosting the WSDL file on my
 	webserver, use the one at http://api.google.com/GoogleSearch.wsdl
