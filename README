@@ -2,7 +2,7 @@ Google
 
 Requires WWW::Search
 
-Module backend for WWW::Search for search www.google.pm
+Module backend for WWW::Search for searching www.google.pm
 
 
 For a list of current working backends see http://members.xoom.com/backends
