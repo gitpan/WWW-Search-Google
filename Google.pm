@@ -2,14 +2,14 @@ package WWW::Search::Google;
 
 use strict;
 use Carp;
-use SOAP::Lite;
+use Net::Google;
 use WWW::Search qw(generic_option);
 use WWW::SearchResult;
 use vars qw(@ISA $VERSION);
 no warnings qw(redefine);
 
 @ISA = qw(WWW::Search);
-$VERSION = "0.20";
+$VERSION = "0.21";
 
 =head1 NAME
 
@@ -40,15 +40,9 @@ valid Google API license key before using this module.
 
 This module reports errors via croak().
 
-=cut
+This module now lets Net::Google do all the dirty work.
 
-# Redefine how the default deserializer handles booleans.
-# Workaround because the 1999 schema implementation incorrectly doesn't
-# accept "true" and "false" for boolean values.
-# See http://groups.yahoo.com/group/soaplite/message/895
-*SOAP::XMLSchema1999::Deserializer::as_boolean =
-    *SOAP::XMLSchemaSOAP1_1::Deserializer::as_boolean = 
-    \&SOAP::XMLSchema2001::Deserializer::as_boolean;
+=cut
 
 sub native_setup_search {
   my($self, $query) = @_;
@@ -66,35 +60,32 @@ sub native_retrieve_some {
   my $query = $self->{_query};
   my $offset = $self->{_offset};
 
-  my $google = SOAP::Lite->service("http://api.google.com/GoogleSearch.wsdl");
-  my $result = $google->doGoogleSearch(
-    $key,     # key
-    $query,   # search query
-    $offset,  # start results
-    10,       # max results
-    0,        # filter: boolean
-    "",       # restrict (string)
-    0,        # safeSearch: boolean
-    "",       # lr
-    "latin1", # ie
-    "latin1"  # oe
-  );
+  my $google = Net::Google->new(key => $key);
+  my $search = $google->search();
+  $search->query($query);
+  $search->starts_at($offset);
+  $search->max_results(10);
+  $search->return_estimatedTotal(1);
 
-  croak($google->call->faultstring) if $google->call->fault;
+  my $response = $search->response->[0];
+  return unless defined $response;
+  my @responses = @{$response->resultElements};
 
-  $self->approximate_result_count($result->{estimatedTotalResultsCount});
+  # Hmmm, doesn't work
+  # $self->approximate_result_count($response->estimateTotalResultsNumber);
 
-  if (defined $result->{resultElements} && @{$result->{resultElements}}) {
-    foreach my $element (@{$result->{resultElements}}) {
+  if (@responses) {
+    foreach my $element (@responses) {
       my $hit = WWW::SearchResult->new();
-      $hit->title($element->{title} || "");
-      $hit->url($element->{URL} || "");
-      $hit->description($element->{summary} || $element->{snippit} || "");
+      $hit->title($element->title || "");
+      $hit->url($element->URL || "");
+      $hit->description($element->summary || $element->snippet || "");
       push @{$self->{cache}}, $hit;
     }
   } else {
     return;
   }
+  return if scalar(@responses) < 10;
 
   $self->{_offset} += 10;
   return 1;

@@ -24,6 +24,8 @@ DESCRIPTION
 
     This module reports errors via croak().
 
+    This module now lets Net::Google do all the dirty work.
+
 AUTHOR
     Leon Brocard <acme@astray.com>
 

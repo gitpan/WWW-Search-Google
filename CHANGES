@@ -1,5 +1,9 @@
 Revision history for Perl module WWW::Search::Google: 
 
+0.21 Mon Jan 20 19:43:57 GMT 2003
+	- use Test::More
+	- use Net::Google to do all the hard work
+
 0.20 Wed Aug 21 15:52:14 BST 2002
 	- fixed typo in Makefile.PL, doh!
 
