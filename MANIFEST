@@ -1,7 +1,6 @@
-Google.pm
-Makefile.PL
-t/test.t
-README
-INSTALL
 CHANGES
-MANIFEST
+Google.pm
+MANIFEST			This list of files
+Makefile.PL
+README
+t/simple.t
