@@ -1,5 +1,7 @@
 Google.pm
+Makefile.PL
+t/test.t
 README
+INSTALL
+CHANGES
 MANIFEST
-Makefile.PL	 
-test.pl

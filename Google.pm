@@ -2,7 +2,7 @@
 # Google.pm
 # by Jim Smyser
 # Copyright (C) 1996-1999 by Jim Smyser & USC/ISI
-# $Id: Google.pm,v 2.18 2000/03/23 23:56:01 jims Exp $
+# $Id: Google.pm,v 2.19 2000/06/07 14:29:22 jims Exp $
 ##########################################################
 
 
@@ -84,7 +84,11 @@ will pop at any given time for certain searches. So, if you think you see
 a bug keep the above in mind and send me the search words you used so I
 may code for any new variations.
 
-=head1 VERSION HISTORY
+=head1 CHANGES
+
+2.19
+Regex work on some search results url's that has changed. Number found 
+return should be right now.
 
 2.17
 Insert url as a title when no title is found. 
@@ -136,7 +140,7 @@ require Exporter;
 @EXPORT = qw();
 @EXPORT_OK = qw();
 @ISA = qw(WWW::Search Exporter);
-$VERSION = '2.18';
+$VERSION = '2.19';
 
 $MAINTAINER = 'Jim Smyser <jsmyser@bigfoot.com>';
 $TEST_CASES = <<"ENDTESTCASES";
@@ -225,14 +229,15 @@ sub native_retrieve_some {
      foreach ($self->split_lines($response->content())) {
      next if m@^$@; # short circuit for blank lines
 
-  if ($state == $HEADER && m|<b>(\d+)</b></font> matches|i) 
+  if ($state == $HEADER && m/about <b>([\d,]+)<\/b>/) 
      {
-     $self->approximate_result_count($1);
-     print STDERR "**Found Header**\n" if ($self->{_debug});
+     my($n) = $1;
+     $self->approximate_result_count($n);
+     print STDERR "Found Total: $n\n" ;
      $state = $HITS;
      } 
   elsif ($state == $HITS &&
-     m|<a href=(.*)\>(.*?)</a><font size=-1><br><font color=green>|i) {
+     m|<a href=(.*)\>(.*?)</a><font size=-1><br><font color=green><.*?>|i) {
      my ($url, $title) = ($1,$2);
      ($hit, $raw) = $self->begin_new_hit($hit, $raw);
      print STDERR "**Found HIT1 Line**\n" if ($self->{_debug});
@@ -240,12 +245,12 @@ sub native_retrieve_some {
      $url =~ s/(>.*)//g;
      $hit->add_url(strip_tags($url));
      $hits_found++;
-	 $title = $url if ($title eq '');
+     $title = $url if ($title eq '');
      $hit->title(strip_tags($title));
      $state = $HITS;
      } 
   elsif ($state == $HITS &&
-     m@^<p><a href=([^<]+)\&.*?>(.*)</a><font size=-1><br>(.*)@i ||
+     m@^<p><a href=/url\?sa=U&start=\d+&q=([^<]+)\&.*?>(.*)</a><font size=-1><br>(.*)@i ||
      m@^<p><a href=([^<]+)>(.*)</a>.*?<font size=-1><br>(.*)@i)
      {
      ($hit, $raw) = $self->begin_new_hit($hit, $raw);
@@ -258,7 +263,7 @@ sub native_retrieve_some {
      $raw .= $_;
      $hit->add_url(strip_tags($url));
      $hits_found++;
-	 $title = $url if ($title eq '');
+     $title = $url if ($title eq '');
      $hit->title(strip_tags($title));
      $mDesc =~ s/<.*?>//g;
      $mDesc =  $mDesc . '<br>' if not $mDesc =~ m@<br>@;
@@ -307,3 +312,6 @@ sub native_retrieve_some {
      return $hits_found;
      }
 1;
+
+
+
