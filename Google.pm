@@ -9,7 +9,7 @@ use vars qw(@ISA $VERSION);
 no warnings qw(redefine);
 
 @ISA = qw(WWW::Search);
-$VERSION = 0.19;
+$VERSION = "0.20";
 
 =head1 NAME
 

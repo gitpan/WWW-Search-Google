@@ -1,5 +1,8 @@
 Revision history for Perl module WWW::Search::Google: 
 
+0.20 Wed Aug 21 15:52:14 BST 2002
+	- fixed typo in Makefile.PL, doh!
+
 0.19 Mon Jul 22 23:18:29 BST 2002
 	- OSCON edition
 	- updated Makefile.PL dependencies
