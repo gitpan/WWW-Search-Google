@@ -1,5 +1,9 @@
 Revision history for Perl module WWW::Search::Google: 
 
+0.22 Sat Jan  8 09:15:11 GMT 2005
+	- added POD test
+	- return estimated results count (thanks to rayg)
+
 0.21 Mon Jan 20 19:43:57 GMT 2003
 	- use Test::More
 	- use Net::Google to do all the hard work

@@ -9,11 +9,11 @@ use vars qw(@ISA $VERSION);
 no warnings qw(redefine);
 
 @ISA = qw(WWW::Search);
-$VERSION = "0.21";
+$VERSION = "0.22";
 
 =head1 NAME
 
-WWW::Search::Google - search Google via SOAP
+WWW::Search::Google - Search Google via SOAP
 
 =head1 SYNOPSIS
 
@@ -40,7 +40,7 @@ valid Google API license key before using this module.
 
 This module reports errors via croak().
 
-This module now lets Net::Google do all the dirty work.
+This module uses Net::Google to do all the dirty work.
 
 =cut
 
@@ -71,8 +71,7 @@ sub native_retrieve_some {
   return unless defined $response;
   my @responses = @{$response->resultElements};
 
-  # Hmmm, doesn't work
-  # $self->approximate_result_count($response->estimateTotalResultsNumber);
+  $self->approximate_result_count($response->estimatedTotalResultsCount);
 
   if (@responses) {
     foreach my $element (@responses) {
