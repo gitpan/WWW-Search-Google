@@ -9,7 +9,7 @@ use vars qw(@ISA $VERSION);
 no warnings qw(redefine);
 
 @ISA = qw(WWW::Search);
-$VERSION = 0.17;
+$VERSION = 0.18;
 
 =head1 NAME
 
@@ -38,6 +38,8 @@ All interaction should be done through WWW::Search objects.
 Note that you must register for a Google Web API account and have a
 valid Google API license key before using this module.
 
+This module reports errors via croak().
+
 =cut
 
 # Redefine how the default deserializer handles booleans.
@@ -64,8 +66,8 @@ sub native_retrieve_some {
   my $query = $self->{_query};
   my $offset = $self->{_offset};
 
-  my $service = SOAP::Lite->service("http://www.astray.com/tmp/GoogleSearch.wsdl");
-  my $result = $service->doGoogleSearch(
+  my $google = SOAP::Lite->service("http://api.google.com/GoogleSearch.wsdl");
+  my $result = $google->doGoogleSearch(
     $key,     # key
     $query,   # search query
     $offset,  # start results
@@ -78,6 +80,8 @@ sub native_retrieve_some {
     "latin1"  # oe
   );
 
+  croak($google->call->faultstring) if $google->call->fault;
+
   $self->approximate_result_count($result->{estimatedTotalResultsCount});
 
   if (defined $result->{resultElements} && @{$result->{resultElements}}) {
@@ -89,7 +93,7 @@ sub native_retrieve_some {
       push @{$self->{cache}}, $hit;
     }
   } else {
-    return undef;
+    return;
   }
 
   $self->{_offset} += 10;

@@ -1,4 +1,11 @@
 Revision history for Perl module WWW::Search::Google: 
 
+0.18 Wed Apr 17 09:00:26 GMT 2002
+	- instead of the temporary hack of hosting the WSDL file on my
+	webserver, use the one at http://api.google.com/GoogleSearch.wsdl
+	(yes! Google got back to me and did the right thing! ;-)
+	- exception handling via croak() which will warn if you use an
+	invalid Google API license key or upon other errors
+
 0.17 Fri Apr 12 14:41:02 BST 2002
 	- first released version

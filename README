@@ -22,6 +22,8 @@ DESCRIPTION
     Note that you must register for a Google Web API account and have a
     valid Google API license key before using this module.
 
+    This module reports errors via croak().
+
 AUTHOR
     Leon Brocard <acme@astray.com>
 
