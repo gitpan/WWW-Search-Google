@@ -2,7 +2,7 @@
 # Google.pm
 # by Jim Smyser
 # Copyright (C) 1996-1999 by Jim Smyser & USC/ISI
-# $Id: Google.pm,v 2.19 2000/06/07 14:29:22 jims Exp $
+# $Id: Google.pm,v 2.20 2000/06/08 14:29:22 jims Exp $
 ##########################################################
 
 
@@ -29,8 +29,6 @@ print $Result->url, "\n";
 This class is a Google specialization of WWW::Search.
 It handles making and interpreting Google searches.
 F<http://www.google.com>.
-
-Googles returns 100 Hits per page. Custom Linux Only search capable.
 
 This class exports no public interface; all interaction should
 be done through L<WWW::Search> objects.
@@ -86,6 +84,9 @@ may code for any new variations.
 
 =head1 CHANGES
 
+2.20
+Forgot to add new next url regex in 2.19!
+
 2.19
 Regex work on some search results url's that has changed. Number found 
 return should be right now.
@@ -140,7 +141,7 @@ require Exporter;
 @EXPORT = qw();
 @EXPORT_OK = qw();
 @ISA = qw(WWW::Search Exporter);
-$VERSION = '2.19';
+$VERSION = '2.20';
 
 $MAINTAINER = 'Jim Smyser <jsmyser@bigfoot.com>';
 $TEST_CASES = <<"ENDTESTCASES";
@@ -290,11 +291,11 @@ sub native_retrieve_some {
      $state = $TRAILER;
      } 
   elsif ($state == $TRAILER && 
-     m|<a href=([^<]+)><IMG SRC=/nav_next.gif.*?><br><.*?>.*?</A>|i) 
+     m|<a href=([^<]+)><IMG SRC=/nav_next.gif.*?>.*?|i) 
      {
      my($relative_url) = $1;
      print STDERR "**Fetching >>Next<< Page**\n" if ($self->{_debug});
-     $self->{_next_url} = new URI::URL($relative_url, $self->{_base_url});
+     $self->{_next_url} = 'http://www.google.com' . $relative_url;
      $state = $POST_NEXT;
      } else {
      };
@@ -312,6 +313,3 @@ sub native_retrieve_some {
      return $hits_found;
      }
 1;
-
-
-
